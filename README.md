@@ -36,10 +36,10 @@ A PomoDB "fact" is an ordered 4-tuple ("quad") consisting of an [Entity ID], [At
 
 ``` ipldsch
 type Fact struct {
-  e  EntityID
-  a  Attribute
-  v  Value
-  cs [&Fact]
+  e EntityID
+  a Attribute
+  v Value
+  c [&Fact]
 } representation tuple
 ```
 
@@ -82,23 +82,7 @@ type FactCapsule struct {
 ## 2.2 Tables
 
 ``` ipldsch
--- Database layout
-type PomoDB struct {
-  pdb {EntityID : FactDB}
-}
-
-type FactDB struct {
-  fdb {Attribute : PomoLeaf]}
-}
-
-type PomoLeaf struct {
-  v Value
-  c [&Fact]
-} representation tuple
-
-type PomoDBCapsule struct {
-  dbc PomoDB (rename "pomodb/v0.1/db")
-}
+type PomoStore struct = Set<Link<Fact>>
 ```
 
 # 3. FAQ
