@@ -46,7 +46,7 @@ type Fact struct {
 } representation tuple
 ```
 
-Note that the `representation tuple` flattens the struct to a positional array. For example, the following concrete DAG-JSON representation parses to the IPLD representation below it (given in Rust).
+Note that the `representation tuple` flattens the struct to a positional array. For example, the following concrete [DAG-JSON] representation parses to the IPLD representation below it (given in Rust).
 
 ``` js
 // DAG-JSON
@@ -140,9 +140,9 @@ type Collection = [Fact]
 
 # 3 Canonicalization Considerations
 
-IPLD cleanly canonicalizes data, though differently per codec. However, the same data MAY have multiple CIDs due to differences in encoding, hash algorithm, and so on. Strictly speaking, this in no way poses a problem for PomoDB: the same fact being entered into the store twice is trivial for most operations that only depend on the graph structure of the store.
+IPLD cleanly canonicalizes data, though differently per codec. However, the same data MAY have multiple CIDs due to differences in encoding, hash algorithm, and so on. Strictly speaking, this in no way poses a problem for PomoDB: the same fact entered into the store twice is trivial for operations that only depend on the graph structure of the store.
 
-Certain aggregate functions (e.g. counts, sums, averages) and stateful queries (e.g. graph colorings) depend on a node being present no more than once per graph. As such deduplication is imperative for many use cases. It is RECOMMENDED that all facts added to a store have a canonical CID. This MAY be of any configuration. To reduce the amount of recomputation, using the following parameters are RECOMMENDED:
+Certain aggregate functions (e.g. counts, sums, averages) and stateful queries (e.g. graph colorings) depend on a node being present no more than once per graph. Deduplication is thus imperative for many use cases. It is RECOMMENDED that all facts added to a store have a canonical CID. This MAY be of any CID configuration. To reduce the amount of recomputation, using the following parameters are RECOMMENDED:
 
 | Parameter    | Recommended Setting |
 |--------------|---------------------|
@@ -161,6 +161,7 @@ Note that the [multibase] of a CID is defined by the codec and CID version.
 [Capsule]: #216-capsule
 [Caused By]: #215-caused-by
 [DAG-CBOR]: https://ipld.io/specs/codecs/dag-cbor/spec/
+[DAG-JSON]: https://ipld.io/docs/codecs/known/dag-json/
 [Entity ID]: #212-entity-id
 [Fact]: #211-fact
 [Fission Codes]: https://fission.codes
