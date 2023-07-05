@@ -1,4 +1,7 @@
 AKE
+colorings
+recomputation
+canonicalizes
 APIs
 Antijoin
 Arity

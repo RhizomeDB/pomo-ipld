@@ -110,7 +110,7 @@ type CausedBy = [&Fact]
  
 ## 2.1.6 Capsule
 
-An OPTIONAL capsule type to clarify the encosed data MAY be used.
+An OPTIONAL capsule type to clarify the enclosed data MAY be used.
 
 ``` ipldsch
 type FactCapsule struct {
