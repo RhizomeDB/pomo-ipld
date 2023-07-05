@@ -27,9 +27,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Interplanetary Linked Data ([IPLD]) is a consistent, highly general data model for content addressed linked data forming any DAG. This data model provides a convenient pivot between many serializations of the same information.
 
-PomoDB was originally designed with [IPFS] — and by extension IPLD — in mind. Content addresses depend on the codec of some data. As such, the exact layout of the data is important.
+PomoDB was originally designed with [IPFS] — and by extension IPLD — in mind. Content addresses depend on the codec of some data. As such, the exact layout of the data as IPLD is important. This specification gives the IPLD encoding.
 
-# 2. Schemata
+# 2. Schema
 
 ## 2.1 Fact
 
@@ -46,10 +46,10 @@ type Fact struct {
 } representation tuple
 ```
 
-Note that the `representation tuple` flattens the struct to an ordered array. For example, the following concrete JSON representation parses to the IPLD representation below it (given in Rust).
+Note that the `representation tuple` flattens the struct to a positional array. For example, the following concrete DAG-JSON representation parses to the IPLD representation below it (given in Rust).
 
 ``` json
-[123, "name/last", "Monroe", ["bafyreiaajfbxfnbbdbhvxmowe6t63ytsimv4daiitv5gkqetwrpww5zmsy"]]
+[123, "name/last", "Monroe", [{"/": "bafyreiaajfbxfnbbdbhvxmowe6t63ytsimv4daiitv5gkqetwrpww5zmsy"}]]
 ```
 
 ``` rust
@@ -76,34 +76,34 @@ Attributes MUST be represented as one of the following:
 ``` ipldsch
 type Attribute
   = Integer -- e.g. Normal indices
-  | Float   -- e.g. Fractional indices, IEEE 754 double precision
-  | Utf8
+  | Float   -- e.g. Fractional indices
+  | String
   | Bytes
 ```
 
 ### 2.1.4 Value
 
-Fact values MUST be given as one of the 
+Values MUST be given as one of the following:
 
 ``` ipldsch
 type Value union {
   | Boolean
   | Integer
-  | Float -- Note: Double-precision float
-  | Utf8
+  | Float
+  | String 
   | Link
   | Bytes
 } representation kinded
 ```
  
-Note that all Float values MUST be representable as 64-bit (double-precision) floats as defined in [IEEE 754-2019] when deserialized. `NaN`s MUST NOT be used.
+Note that all floating point values MUST be representable as 64-bit (double-precision) floats as defined in [IEEE 754-2019] when deserialized. `NaN`s MUST NOT be used.
 
 ### 2.1.5 Caused By
 
-Links to other facts MUST be placed in an array in the "CausedBy" field.
+Links to other facts MUST be placed in an array in the `causedBy` field.
 
 ``` ipldsch
-type Causes = [&Fact]
+type CausedBy = [&Fact]
 ```
  
 ## 2.1.6 Capsule
@@ -157,7 +157,7 @@ Note that the [multibase] of a CID is defined by the codec and CID version.
 [CIDv1]: https://docs.ipfs.tech/concepts/content-addressing/#cid-versions
 [Capsule Type]: https://notes.brooklynzelenka.com/Capsule+Types
 [Capsule]: #216-capsule
-[Causes]: #215-caused-by
+[Caused By]: #215-caused-by
 [DAG-CBOR]: https://ipld.io/specs/codecs/dag-cbor/spec/
 [Entity ID]: #212-entity-id
 [Fact]: #211-fact
