@@ -57,8 +57,8 @@ Note that the `representation tuple` flattens the struct to a positional array. 
 // Rust
 Fact {
   attribute: "name/last",
-  causedBy: [Link("bafyreiaajfbxfnbbdbhvxmowe6t63ytsimv4daiitv5gkqetwrpww5zmsy")],
-  entityId: 123,
+  caused_by: [Link("bafyreiaajfbxfnbbdbhvxmowe6t63ytsimv4daiitv5gkqetwrpww5zmsy")],
+  entity_id: 123,
   value: "Monroe",
 }
 ```
