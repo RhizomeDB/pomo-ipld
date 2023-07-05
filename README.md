@@ -169,6 +169,7 @@ Note that the [multibase] of a CID is defined by the codec and CID version.
 [Multihash]: https://multiformats.io/multihash/ 
 [PomoDB]: https://github.com/RhizomeDB/spec
 [Quinn Wilton]: https://github.com/QuinnWilton
+[RFC 2119]: https://www.rfc-editor.org/rfc/rfc2119
 [SHA2-256]: https://en.wikipedia.org/wiki/SHA-2
 [Store]: #22-store
 [Value]: #214-value
