@@ -13,6 +13,7 @@
 ## Dependencies
 
 - [IPLD]
+- [PomoDB]
 
 # Language
 
@@ -20,30 +21,49 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 # 0. Abstract
 
-[Interplanetary Linked Data (IPLD)](https://ipld.io/) is a consistent, highly general data model for content addressed linked data forming any DAG. This data model provides a convenient pivot between many serializations of the same information.
+[PomoDB] represents data in a consistent, content addressable data format for Datalog facts. This specification describes the IPLD encoding.
 
 # 1. Motivation
 
-TODO
+Interplanetary Linked Data ([IPLD]) is a consistent, highly general data model for content addressed linked data forming any DAG. This data model provides a convenient pivot between many serializations of the same information.
+
+PomoDB was originally designed with [IPFS] — and by extension IPLD — in mind. Content addresses depend on the codec of some data. As such, the exact layout of the data is important.
 
 # 2. Schemata
 
 ## 2.1 Fact
 
-A PomoDB "fact" is an ordered 4-tuple ("quad") consisting of an [Entity ID], [Attribute], [Value], and [Causes]:
+A PomoDB "Fact" is an ordered 4-tuple ("quad") consisting of an [Entity ID], [Attribute], [Value], and [Causes].
 
-### 2.1.1
+### 2.1.1 Fact
 
 ``` ipldsch
 type Fact struct {
-  e EntityID
-  a Attribute
-  v Value
-  c [&Fact]
+  entityId  EntityID
+  attribute Attribute
+  value     Value
+  causes    [&Fact]
 } representation tuple
 ```
 
+Note that the `representation tuple` flattens the struct to an ordered array. For example, the following concrete JSON representation parses to the IPLD representation below it (given in Rust).
+
+``` json
+[123, "name/last", "Monroe", ["bafyreiaajfbxfnbbdbhvxmowe6t63ytsimv4daiitv5gkqetwrpww5zmsy"]]
+```
+
+``` rust
+Fact {
+  attribute: "name/last",
+  causes: [Link("bafyreiaajfbxfnbbdbhvxmowe6t63ytsimv4daiitv5gkqetwrpww5zmsy")],
+  entityId: 123,
+  value: "Monroe",
+}
+```
+
 ### 2.1.2 Entity ID
+
+Restricting an entity ID to 128-bits is RECOMMENDED.
 
 ``` ipldsch
 type EntityID = Bytes
@@ -51,116 +71,95 @@ type EntityID = Bytes
 
 ### 2.1.3 Attribute
 
+Attributes MUST be represented as one of the following:
+
 ``` ipldsch
 type Attribute
   = Integer -- e.g. Normal indices
-  | Float   -- e.g. Fractional indices
+  | Float   -- e.g. Fractional indices, IEEE 754 double precision
   | Utf8
   | Bytes
 ```
 
 ### 2.1.4 Value
 
-``` ipldsch
-type Value
-  = Boolean
-  | Integer
-  | Double
-  | Utf8
-  | Cid
-  | Bytes
-```
+Fact values MUST be given as one of the 
 
-### 2.1.5 Capsule
+``` ipldsch
+type Value union {
+  | Boolean
+  | Integer
+  | Float -- Note: Double-precision float
+  | Utf8
+  | Link
+  | Bytes
+} representation kinded
+```
+ 
+Note that all Float values MUST be representable as 64-bit (double-precision) floats as defined in [IEEE 754-2019] when deserialized. `NaN`s MUST NOT be used.
+
+### 2.1.5 Causes
+
+Links to other facts MUST be placed in an array in the "Causes" field.
+
+``` ipldsch
+type Causes = [&Fact]
+```
+ 
+## 2.1.6 Capsule
+
+An OPTIONAL capsule type to clarify the encosed data MAY be used.
 
 ``` ipldsch
 type FactCapsule struct {
-  fc Fact (rename "pomodb/v0.1/fact")
+  c Fact (rename "pomodb/v0.1/fact")
 }
 ```
 
-## 2.2 Tables
+## 2.2 Store
+
+As PomoDB is intended to operate over many Facts, storing and referencing collections is important. Below are two strategies for representing groups of Facts.
+
+### 2.2.1 Hash Map
+
+A collection of Facts is called a "Store". This structure is simply a content-addressed blockstore indexing Facts by their CID.
 
 ``` ipldsch
-type PomoStore struct = Set<Link<Fact>>
+type Store = {CID : Fact}
 ```
 
-# 3. FAQ
+### 2.2.2 Set
 
-## 3.1 Why a tuple instead of a map?
+Stores contain too much information for transmission and encrypted storage. In these cases, a flat set called a Collection MAY be used:
 
-- Consistent layout
-- reading order
-- EDN
-
-# 0 Abstract
-
-
-
-
-Being a chained token model, UCANs can be very naturally expressed via IPLD. However, JWTs are not fully deterministic due to whitespace and key ordering. This specification defines an IPLD Schema for UCAN, and a canonical JWT serialization for compatibility with all other clients.
-
-# 1 Motivation
-
-The [core UCAN specification](https://github.com/ucan-wg/spec) is defined as a JWT to make it easily adoptable with existing tools, and as a common format for all implementations. There are many cases where different encodings are preferred for reasons such as compactness, machine-efficient formats, and so on. This specification outlines a format based on IPLD that can be deterministically encoded and decoded between many serialization formats, while still being able to encode as JWT for compatibility.
-
-# 2 IPLD Schema
-
-Unlike a JWT, the IPLD encoding of UCAN does not require separate header, claims, and signature fields.
-
-```ipldsch
-type UCAN struct {
-  v String
-
-  iss Principal
-  aud Principal
-  s Signature
-
-  att [Capability]
-  -- All proofs are links, however you could still inline proof
-  -- by using CID with identity hashing algorithm
-  prf [&UCAN]
-  exp Int
-
-  fct [Fact]
-  nnc optional String
-  nbf optional Int
-} representation map {
-  field fct default []
-  field prf default []
-}
+``` ipldsch
+type Collection = [Fact]
 ```
 
+# 3 Canonicalization Considerations
 
+IPLD cleanly canoncializes data per codec. However, the same data MAY have multiple CIDs due to differences in encoding, hash algorithm, and so on. Strictly speaking, this in no way poses a problem for PomoDB: the same fact being entered into the store twice is trivial for most operations that only depend on the graph structure of the store.
 
+Certain aggregate functions (e.g. counts, sums, averages) and stateful queries (e.g. graph colorings) depend on a node being present no more than once per graph. As such deduplication is imperative for many use cases. It is RECOMMENDED that all facts added to a store have a canonical CID. This MAY be of any configuration. To reduce the amount of recomputation, using the following parameters is RECOMMENDED:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- DAG-CBOR
+- SHA2-256
+- 
 
 <!-- Links -->
 
+[Attribute]: #213-attribute
 [Brooklyn Zelenka]: https://github.com/expede
+[Capsule Type]: https://notes.brooklynzelenka.com/Capsule+Types
+[Capsule]: #216-capsule
+[Causes]: #215-causes
+[Entity ID]: #212-entity-id
+[Fact]: #211-fact
 [Fission Codes]: https://fission.codes
+[IEEE 754-2019]: https://en.wikipedia.org/wiki/IEEE_754
+[IPFS]: https://ipfs.io
+[IPLD]: https://ipld.io
+[PomoDB]: https://github.com/RhizomeDB/spec
 [Quinn Wilton]: https://github.com/QuinnWilton
-
+[Store]: #22-store
+[Value]: #214-value
