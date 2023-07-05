@@ -140,7 +140,7 @@ type Collection = [Fact]
 
 # 3 Canonicalization Considerations
 
-IPLD cleanly canoncializes data per codec. However, the same data MAY have multiple CIDs due to differences in encoding, hash algorithm, and so on. Strictly speaking, this in no way poses a problem for PomoDB: the same fact being entered into the store twice is trivial for most operations that only depend on the graph structure of the store.
+IPLD cleanly canonicalizes data, though differently per codec. However, the same data MAY have multiple CIDs due to differences in encoding, hash algorithm, and so on. Strictly speaking, this in no way poses a problem for PomoDB: the same fact being entered into the store twice is trivial for most operations that only depend on the graph structure of the store.
 
 Certain aggregate functions (e.g. counts, sums, averages) and stateful queries (e.g. graph colorings) depend on a node being present no more than once per graph. As such deduplication is imperative for many use cases. It is RECOMMENDED that all facts added to a store have a canonical CID. This MAY be of any configuration. To reduce the amount of recomputation, using the following parameters are RECOMMENDED:
 

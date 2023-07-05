@@ -22,6 +22,7 @@ CIDv
 CRDT
 CRDTs
 Cambria
+Canonicalization
 Cartesian
 DAGs
 DBSP
@@ -68,6 +69,8 @@ Kubo
 Mentat
 Mentat's
 Merkle
+Multicodec
+Multihash
 Multiplay
 Namespaces
 OOM
@@ -77,6 +80,7 @@ PomoDB
 PomoDB's
 PomoFlow
 PomoFlow's
+PomoIPLD
 PomoLogic
 PomoLogic's
 PomoRA
@@ -93,6 +97,7 @@ Requestor's
 Roadmap
 Runtime
 SCCs
+SHA
 SPOC
 Semijoin
 Soufflé
@@ -132,12 +137,14 @@ auth
 bafy
 bilinear
 bilinearity
+blockstore
 boolean
 booleans
 cartesian
 checkbox's
 classDef
 cmy
+codec
 counterintuitive
 cryptographically
 dataflow
@@ -147,6 +154,7 @@ deduplicated
 deduplicates
 deduplicating
 deduplication
+deserialized
 dialable
 disjunction
 emptyset
@@ -179,6 +187,7 @@ ln
 mTLS
 memoization
 mno
+multibase
 ntity
 ontologies
 optimality
@@ -193,6 +202,7 @@ probabilistically
 rangle
 rederived
 remixable
+representable
 requestor
 resampling
 rgb
@@ -208,6 +218,7 @@ skyEID
 spoc
 stateful
 stratifications
+struct
 stu
 subcircuit
 subcircuits
