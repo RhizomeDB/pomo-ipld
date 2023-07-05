@@ -142,24 +142,33 @@ IPLD cleanly canoncializes data per codec. However, the same data MAY have multi
 
 Certain aggregate functions (e.g. counts, sums, averages) and stateful queries (e.g. graph colorings) depend on a node being present no more than once per graph. As such deduplication is imperative for many use cases. It is RECOMMENDED that all facts added to a store have a canonical CID. This MAY be of any configuration. To reduce the amount of recomputation, using the following parameters is RECOMMENDED:
 
-- DAG-CBOR
-- SHA2-256
-- 
+| Parameter    | Recommended Setting |
+|--------------|---------------------|
+| CID Version  | [CIDv1]             |
+| [Multicodec] | [DAG-CBOR]          |
+| [Multihash]  | [SHA2-256]          |
+
+Note that the multibase of a CID is defined by the codec and CID version.
 
 <!-- Links -->
 
 [Attribute]: #213-attribute
 [Brooklyn Zelenka]: https://github.com/expede
+[CIDv1]: https://docs.ipfs.tech/concepts/content-addressing/#cid-versions
 [Capsule Type]: https://notes.brooklynzelenka.com/Capsule+Types
 [Capsule]: #216-capsule
 [Causes]: #215-causes
+[DAG-CBOR]: https://ipld.io/specs/codecs/dag-cbor/spec/
 [Entity ID]: #212-entity-id
 [Fact]: #211-fact
 [Fission Codes]: https://fission.codes
 [IEEE 754-2019]: https://en.wikipedia.org/wiki/IEEE_754
 [IPFS]: https://ipfs.io
 [IPLD]: https://ipld.io
+[Multicodec]: https://github.com/multiformats/multicodec
+[Multihash]: https://multiformats.io/multihash/ 
 [PomoDB]: https://github.com/RhizomeDB/spec
 [Quinn Wilton]: https://github.com/QuinnWilton
+[SHA2-256]: https://en.wikipedia.org/wiki/SHA-2
 [Store]: #22-store
 [Value]: #214-value
