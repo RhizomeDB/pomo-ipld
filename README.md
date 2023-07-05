@@ -33,7 +33,7 @@ PomoDB was originally designed with [IPFS] — and by extension IPLD — in min
 
 ## 2.1 Fact
 
-A PomoDB "Fact" is an ordered 4-tuple ("quad") consisting of an [Entity ID], [Attribute], [Value], and [Causes].
+A PomoDB "Fact" is an ordered 4-tuple ("quad") consisting of an [Entity ID], [Attribute], [Value], and [Caused By].
 
 ### 2.1.1 Fact
 
@@ -42,7 +42,7 @@ type Fact struct {
   entityId  EntityID
   attribute Attribute
   value     Value
-  causes    [&Fact]
+  causedBy  [&Fact]
 } representation tuple
 ```
 
@@ -55,7 +55,7 @@ Note that the `representation tuple` flattens the struct to an ordered array. Fo
 ``` rust
 Fact {
   attribute: "name/last",
-  causes: [Link("bafyreiaajfbxfnbbdbhvxmowe6t63ytsimv4daiitv5gkqetwrpww5zmsy")],
+  causedBy: [Link("bafyreiaajfbxfnbbdbhvxmowe6t63ytsimv4daiitv5gkqetwrpww5zmsy")],
   entityId: 123,
   value: "Monroe",
 }
@@ -98,9 +98,9 @@ type Value union {
  
 Note that all Float values MUST be representable as 64-bit (double-precision) floats as defined in [IEEE 754-2019] when deserialized. `NaN`s MUST NOT be used.
 
-### 2.1.5 Causes
+### 2.1.5 Caused By
 
-Links to other facts MUST be placed in an array in the "Causes" field.
+Links to other facts MUST be placed in an array in the "CausedBy" field.
 
 ``` ipldsch
 type Causes = [&Fact]
@@ -140,7 +140,7 @@ type Collection = [Fact]
 
 IPLD cleanly canoncializes data per codec. However, the same data MAY have multiple CIDs due to differences in encoding, hash algorithm, and so on. Strictly speaking, this in no way poses a problem for PomoDB: the same fact being entered into the store twice is trivial for most operations that only depend on the graph structure of the store.
 
-Certain aggregate functions (e.g. counts, sums, averages) and stateful queries (e.g. graph colorings) depend on a node being present no more than once per graph. As such deduplication is imperative for many use cases. It is RECOMMENDED that all facts added to a store have a canonical CID. This MAY be of any configuration. To reduce the amount of recomputation, using the following parameters is RECOMMENDED:
+Certain aggregate functions (e.g. counts, sums, averages) and stateful queries (e.g. graph colorings) depend on a node being present no more than once per graph. As such deduplication is imperative for many use cases. It is RECOMMENDED that all facts added to a store have a canonical CID. This MAY be of any configuration. To reduce the amount of recomputation, using the following parameters are RECOMMENDED:
 
 | Parameter    | Recommended Setting |
 |--------------|---------------------|
@@ -148,7 +148,7 @@ Certain aggregate functions (e.g. counts, sums, averages) and stateful queries (
 | [Multicodec] | [DAG-CBOR]          |
 | [Multihash]  | [SHA2-256]          |
 
-Note that the multibase of a CID is defined by the codec and CID version.
+Note that the [multibase] of a CID is defined by the codec and CID version.
 
 <!-- Links -->
 
@@ -157,7 +157,7 @@ Note that the multibase of a CID is defined by the codec and CID version.
 [CIDv1]: https://docs.ipfs.tech/concepts/content-addressing/#cid-versions
 [Capsule Type]: https://notes.brooklynzelenka.com/Capsule+Types
 [Capsule]: #216-capsule
-[Causes]: #215-causes
+[Causes]: #215-caused-by
 [DAG-CBOR]: https://ipld.io/specs/codecs/dag-cbor/spec/
 [Entity ID]: #212-entity-id
 [Fact]: #211-fact
@@ -172,3 +172,4 @@ Note that the multibase of a CID is defined by the codec and CID version.
 [SHA2-256]: https://en.wikipedia.org/wiki/SHA-2
 [Store]: #22-store
 [Value]: #214-value
+[multibase]: https://github.com/multiformats/multibase
