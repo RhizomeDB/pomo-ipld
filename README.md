@@ -49,10 +49,12 @@ type Fact struct {
 Note that the `representation tuple` flattens the struct to a positional array. For example, the following concrete DAG-JSON representation parses to the IPLD representation below it (given in Rust).
 
 ``` json
+// DAG-JSON
 [123, "name/last", "Monroe", [{"/": "bafyreiaajfbxfnbbdbhvxmowe6t63ytsimv4daiitv5gkqetwrpww5zmsy"}]]
 ```
 
 ``` rust
+// Rust
 Fact {
   attribute: "name/last",
   causedBy: [Link("bafyreiaajfbxfnbbdbhvxmowe6t63ytsimv4daiitv5gkqetwrpww5zmsy")],
