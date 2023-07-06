@@ -169,7 +169,7 @@ Note that the [multibase] of a CID is defined by the codec and CID version.
 [IPFS]: https://ipfs.io
 [IPLD]: https://ipld.io
 [Multicodec]: https://github.com/multiformats/multicodec
-[Multihash]: https://multiformats.io/multihash/ 
+[Multihash]: https://github.com/multiformats/multihash
 [PomoDB]: https://github.com/RhizomeDB/spec
 [Quinn Wilton]: https://github.com/QuinnWilton
 [RFC 2119]: https://www.rfc-editor.org/rfc/rfc2119
